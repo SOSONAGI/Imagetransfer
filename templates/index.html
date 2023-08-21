@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>하자 부위 수정</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required onchange="loadImage(event)"><br>
+        <textarea name="defect_points" id="defect_points" hidden></textarea>
+        <textarea name="normal_points" id="normal_points" hidden></textarea>
+        <canvas id="canvas" width="500" height="500" onclick="switchMode()"></canvas><br>
+        <button type="button" onclick="clearCanvas()">다시 그리기</button>
+        <button type="submit">하자 부위 수정</button>
+        <p id="mode">하자 부위를 그리세요.</p>
+    </form>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const defectPointsInput = document.getElementById('defect_points');
+        const normalPointsInput = document.getElementById('normal_points');
+        let drawing = false;
+        let defectPoints = [];
+        let normalPoints = [];
+        let image = new Image();
+        let drawingMode = 'defect';
+
+        function loadImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                image.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        image.onload = function() {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            ctx.beginPath();
+        });
+
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = drawingMode === 'defect' ? 'red' : 'green';
+
+            let point = (event.clientX - canvas.offsetLeft) + ',' + (event.clientY - canvas.offsetTop);
+            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+
+            if (drawingMode === 'defect') {
+                defectPoints.push(point);
+                defectPointsInput.value = defectPoints.join(';') + ';';
+                console.log('Defect points:', defectPointsInput.value);
+            } else {
+                normalPoints.push(point);
+                normalPointsInput.value = normalPoints.join(';') + ';';
+                console.log('Normal points:', normalPointsInput.value);
+            }
+
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        }
+
+        function switchMode() {
+            if (drawingMode === 'defect') {
+                drawingMode = 'normal';
+                document.getElementById('mode').textContent = "정상 부위를 그리세요.";
+            } else {
+                drawingMode = 'defect';
+                document.getElementById('mode').textContent = "하자 부위를 그리세요.";
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            defectPointsInput.value = "";
+            normalPointsInput.value = "";
+            drawingMode = 'defect';
+            document.getElementById('mode').textContent = "하자 부위를 그리세요.";
+        }
+    </script>
+</body>
+</html>
