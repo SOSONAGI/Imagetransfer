@@ -1,5 +1,5 @@
 # Imagetransfer
-image transfer by selecting the box and get results before and after
+image transfer by selecting the box and get results before and after without using any transformer model.
 
 Project Description
 
@@ -24,3 +24,5 @@ Installation
 1. Clone this project.
 2. Install the packages specified in requirements.txt.
 3. Run python main.py to start the server.
+
+*Especially for defectivce of finished materials and working on others :)
