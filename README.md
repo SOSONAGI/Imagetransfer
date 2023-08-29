@@ -3,6 +3,15 @@ image transfer by selecting the box and get results before and after without usi
 
 before get into the project, you must set your own envs.
 
+```CLI
+conda create -n your_envs_name python=3.10
+```
+Version for Python is higher than 3.9=<
+
+```CLI
+cd your_envs
+```
+
 Project Description
 
 This project is a Flask web application that allows users to select a specific part of an uploaded image and replace it with another normal part. This can be used to restore images by replacing defective parts with normal ones.
